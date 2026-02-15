@@ -34,3 +34,10 @@ export async function getPetModel() {
   const connection = await petConnectionPromise
   return connection.models.Pet || connection.model('Pet', petSchema)
 }
+
+export async function getPetDatabaseConnection() {
+  if (!petConnectionPromise) {
+    await getPetModel()
+  }
+  return await petConnectionPromise
+}

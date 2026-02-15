@@ -11,6 +11,9 @@ export async function listUsers(req, res) {
       name: user.name,
       email: user.email,
       role: user.role,
+      phone: user.phone || '',
+      address: user.address || '',
+      preferredContact: user.preferredContact || 'Email',
     })),
   })
 }

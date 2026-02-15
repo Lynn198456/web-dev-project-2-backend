@@ -4,6 +4,22 @@ function normalizeText(value) {
   return String(value || '').trim()
 }
 
+function serializePet(pet) {
+  return {
+    id: pet.id,
+    ownerId: pet.ownerId,
+    ownerName: pet.ownerName || '',
+    name: pet.name,
+    breed: pet.breed,
+    age: pet.age,
+    weight: pet.weight,
+    vaccinationStatus: pet.vaccinationStatus,
+    lastPrescriptionSummary: pet.lastPrescriptionSummary || '',
+    lastPrescriptionAt: pet.lastPrescriptionAt || '',
+    createdAt: pet.createdAt,
+  }
+}
+
 export async function listPets(req, res) {
   const Pet = await getPetModel()
   const ownerId = normalizeText(req.query.userId)
@@ -11,16 +27,7 @@ export async function listPets(req, res) {
   const pets = await Pet.find(query).sort({ createdAt: -1 }).limit(200)
 
   return res.status(200).json({
-    pets: pets.map((pet) => ({
-      id: pet.id,
-      ownerId: pet.ownerId,
-      name: pet.name,
-      breed: pet.breed,
-      age: pet.age,
-      weight: pet.weight,
-      vaccinationStatus: pet.vaccinationStatus,
-      createdAt: pet.createdAt,
-    })),
+    pets: pets.map(serializePet),
   })
 }
 
@@ -46,17 +53,48 @@ export async function createPet(req, res) {
   })
 
   return res.status(201).json({
-    pet: {
-      id: pet.id,
-      ownerId: pet.ownerId,
-      name: pet.name,
-      breed: pet.breed,
-      age: pet.age,
-      weight: pet.weight,
-      vaccinationStatus: pet.vaccinationStatus,
-      createdAt: pet.createdAt,
-    },
+    pet: serializePet(pet),
   })
+}
+
+export async function updatePet(req, res) {
+  const { petId } = req.params
+  const { ownerId, ownerName, name, breed, age, weight, vaccinationStatus } = req.body
+
+  const updates = {}
+  if (ownerId !== undefined) {
+    updates.ownerId = normalizeText(ownerId)
+  }
+  if (ownerName !== undefined) {
+    updates.ownerName = normalizeText(ownerName)
+  }
+  if (name !== undefined) {
+    updates.name = normalizeText(name)
+  }
+  if (breed !== undefined) {
+    updates.breed = normalizeText(breed)
+  }
+  if (age !== undefined) {
+    updates.age = normalizeText(age)
+  }
+  if (weight !== undefined) {
+    updates.weight = normalizeText(weight)
+  }
+  if (vaccinationStatus !== undefined) {
+    updates.vaccinationStatus = normalizeText(vaccinationStatus)
+  }
+
+  const Pet = await getPetModel()
+  const pet = await Pet.findByIdAndUpdate(petId, updates, {
+    new: true,
+    runValidators: true,
+  })
+
+  if (!pet) {
+    return res.status(404).json({ message: 'Pet not found.' })
+  }
+
+  return res.status(200).json({ pet: serializePet(pet) })
 }
 
 export async function deletePet(req, res) {

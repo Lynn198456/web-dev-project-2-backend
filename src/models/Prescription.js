@@ -1,8 +1,13 @@
 import mongoose from 'mongoose'
 
-export const petSchema = new mongoose.Schema(
+export const prescriptionSchema = new mongoose.Schema(
   {
-    ownerId: {
+    petId: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    petName: {
       type: String,
       required: true,
       trim: true,
@@ -12,37 +17,32 @@ export const petSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    breed: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    age: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    weight: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    vaccinationStatus: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    lastPrescriptionSummary: {
+    doctorId: {
       type: String,
       trim: true,
       default: '',
     },
-    lastPrescriptionAt: {
+    doctorName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    medicine: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    dosage: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    duration: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    notes: {
       type: String,
       trim: true,
       default: '',
@@ -50,6 +50,6 @@ export const petSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    collection: 'pet_data',
+    collection: 'Prescription_data',
   }
 )
