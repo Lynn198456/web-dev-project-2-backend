@@ -38,6 +38,64 @@ const userSchema = new mongoose.Schema(
       enum: ['Email', 'Phone', 'SMS'],
       default: 'Email',
     },
+    notificationPreferences: {
+      appointmentReminders: {
+        type: Boolean,
+        default: true,
+      },
+      vaccinationReminders: {
+        type: Boolean,
+        default: true,
+      },
+      medicalRecordUpdates: {
+        type: Boolean,
+        default: true,
+      },
+      promotionalUpdates: {
+        type: Boolean,
+        default: false,
+      },
+      appointmentRequestAlerts: {
+        type: Boolean,
+        default: true,
+      },
+      paymentConfirmationAlerts: {
+        type: Boolean,
+        default: true,
+      },
+      doctorScheduleChanges: {
+        type: Boolean,
+        default: true,
+      },
+      weeklyPerformanceSummary: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    workingDays: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    workingHours: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    breakTime: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    profilePhoto: {
+      type: String,
+      trim: true,
+      default: '',
+    },
   },
   {
     timestamps: true,

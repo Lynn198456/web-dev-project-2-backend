@@ -9,6 +9,10 @@ import { petRouter } from './routes/petRoutes.js'
 import { userRouter } from './routes/userRoutes.js'
 import { consultationRouter } from './routes/consultationRoutes.js'
 import { prescriptionRouter } from './routes/prescriptionRoutes.js'
+import { doctorScheduleRouter } from './routes/doctorScheduleRoutes.js'
+import { billingRouter } from './routes/billingRoutes.js'
+import { reportRouter } from './routes/reportRoutes.js'
+import { medicalRecordRouter } from './routes/medicalRecordRoutes.js'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js'
 
 const app = express()
@@ -20,7 +24,8 @@ app.use(
     origin: frontendUrl,
   })
 )
-app.use(express.json())
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 app.use('/api/health', healthRouter)
 app.use('/api/auth', authRouter)
@@ -29,6 +34,10 @@ app.use('/api/pets', petRouter)
 app.use('/api/users', userRouter)
 app.use('/api/consultations', consultationRouter)
 app.use('/api/prescriptions', prescriptionRouter)
+app.use('/api/doctor-schedule', doctorScheduleRouter)
+app.use('/api/billing', billingRouter)
+app.use('/api/reports', reportRouter)
+app.use('/api/medical-records', medicalRecordRouter)
 
 app.use(notFoundHandler)
 app.use(errorHandler)

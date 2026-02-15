@@ -5,6 +5,38 @@ function normalizeEmail(value) {
   return String(value || '').trim().toLowerCase()
 }
 
+function normalizeNotificationPreferences(value) {
+  const source = value && typeof value === 'object' ? value : {}
+  return {
+    appointmentReminders: source.appointmentReminders ?? true,
+    vaccinationReminders: source.vaccinationReminders ?? true,
+    medicalRecordUpdates: source.medicalRecordUpdates ?? true,
+    promotionalUpdates: source.promotionalUpdates ?? false,
+    appointmentRequestAlerts: source.appointmentRequestAlerts ?? true,
+    paymentConfirmationAlerts: source.paymentConfirmationAlerts ?? true,
+    doctorScheduleChanges: source.doctorScheduleChanges ?? true,
+    weeklyPerformanceSummary: source.weeklyPerformanceSummary ?? false,
+  }
+}
+
+function serializeUser(user) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    phone: user.phone || '',
+    address: user.address || '',
+    preferredContact: user.preferredContact || 'Email',
+    notificationPreferences: normalizeNotificationPreferences(user.notificationPreferences),
+    twoFactorEnabled: Boolean(user.twoFactorEnabled),
+    workingDays: user.workingDays || '',
+    workingHours: user.workingHours || '',
+    breakTime: user.breakTime || '',
+    profilePhoto: user.profilePhoto || '',
+  }
+}
+
 export async function register(req, res) {
   const { name, email, password, role } = req.body
   const normalizedEmail = normalizeEmail(email)
@@ -31,17 +63,7 @@ export async function register(req, res) {
     role,
   })
 
-  return res.status(201).json({
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      phone: user.phone || '',
-      address: user.address || '',
-      preferredContact: user.preferredContact || 'Email',
-    },
-  })
+  return res.status(201).json({ user: serializeUser(user) })
 }
 
 export async function login(req, res) {
@@ -66,15 +88,5 @@ export async function login(req, res) {
     return res.status(403).json({ message: 'Selected role does not match this account.' })
   }
 
-  return res.status(200).json({
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      phone: user.phone || '',
-      address: user.address || '',
-      preferredContact: user.preferredContact || 'Email',
-    },
-  })
+  return res.status(200).json({ user: serializeUser(user) })
 }
