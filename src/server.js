@@ -7,6 +7,7 @@ import { healthRouter } from './routes/healthRoutes.js'
 import { appointmentRouter } from './routes/appointmentRoutes.js'
 import { petRouter } from './routes/petRoutes.js'
 import { userRouter } from './routes/userRoutes.js'
+import { consultationRouter } from './routes/consultationRoutes.js'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js'
 
 const app = express()
@@ -25,6 +26,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/appointments', appointmentRouter)
 app.use('/api/pets', petRouter)
 app.use('/api/users', userRouter)
+app.use('/api/consultations', consultationRouter)
 
 app.use(notFoundHandler)
 app.use(errorHandler)

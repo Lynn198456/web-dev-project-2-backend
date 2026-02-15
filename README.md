@@ -35,8 +35,10 @@ Base URL: `http://localhost:5001`
 - `POST /api/auth/login`
 - `GET /api/appointments`
 - `POST /api/appointments`
+- `PUT /api/appointments/:appointmentId`
 - `GET /api/pets`
 - `POST /api/pets`
 - `DELETE /api/pets/:petId`
 - `GET /api/users/:userId/profile`
 - `PUT /api/users/:userId/profile`
+- `POST /api/consultations`
