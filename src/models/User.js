@@ -23,6 +23,21 @@ const userSchema = new mongoose.Schema(
       enum: ['pet-owner', 'doctor', 'staff'],
       default: 'pet-owner',
     },
+    phone: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    address: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    preferredContact: {
+      type: String,
+      enum: ['Email', 'Phone', 'SMS'],
+      default: 'Email',
+    },
   },
   {
     timestamps: true,

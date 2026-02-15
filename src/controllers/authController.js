@@ -37,6 +37,9 @@ export async function register(req, res) {
       name: user.name,
       email: user.email,
       role: user.role,
+      phone: user.phone || '',
+      address: user.address || '',
+      preferredContact: user.preferredContact || 'Email',
     },
   })
 }
@@ -69,6 +72,9 @@ export async function login(req, res) {
       name: user.name,
       email: user.email,
       role: user.role,
+      phone: user.phone || '',
+      address: user.address || '',
+      preferredContact: user.preferredContact || 'Email',
     },
   })
 }
