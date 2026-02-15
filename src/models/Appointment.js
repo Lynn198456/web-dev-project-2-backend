@@ -2,6 +2,11 @@ import mongoose from 'mongoose'
 
 const appointmentSchema = new mongoose.Schema(
   {
+    ownerId: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     ownerName: {
       type: String,
       trim: true,

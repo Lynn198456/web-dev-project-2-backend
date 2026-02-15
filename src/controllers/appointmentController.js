@@ -1,7 +1,11 @@
 import { Appointment } from '../models/Appointment.js'
 
+function normalizeText(value) {
+  return String(value || '').trim()
+}
+
 export async function createAppointment(req, res) {
-  const { ownerName, petName, doctorName, appointmentDate, appointmentTime, reason } = req.body
+  const { ownerId, ownerName, petName, doctorName, appointmentDate, appointmentTime, reason } = req.body
 
   if (!petName || !doctorName || !appointmentDate || !appointmentTime || !reason) {
     return res.status(400).json({
@@ -10,7 +14,8 @@ export async function createAppointment(req, res) {
   }
 
   const appointment = await Appointment.create({
-    ownerName: String(ownerName || '').trim(),
+    ownerId: normalizeText(ownerId),
+    ownerName: normalizeText(ownerName),
     petName: String(petName).trim(),
     doctorName: String(doctorName).trim(),
     appointmentDate: String(appointmentDate).trim(),
@@ -21,6 +26,7 @@ export async function createAppointment(req, res) {
   return res.status(201).json({
     appointment: {
       id: appointment.id,
+      ownerId: appointment.ownerId,
       ownerName: appointment.ownerName,
       petName: appointment.petName,
       doctorName: appointment.doctorName,
@@ -33,12 +39,26 @@ export async function createAppointment(req, res) {
   })
 }
 
-export async function listAppointments(_req, res) {
-  const appointments = await Appointment.find().sort({ createdAt: -1 }).limit(100)
+export async function listAppointments(req, res) {
+  const ownerId = normalizeText(req.query.userId)
+  const doctorName = normalizeText(req.query.doctorName)
+  const conditions = []
+
+  if (ownerId) {
+    conditions.push({ ownerId })
+  }
+  if (doctorName) {
+    conditions.push({ doctorName })
+  }
+
+  const query = conditions.length === 0 ? {} : conditions.length === 1 ? conditions[0] : { $and: conditions }
+
+  const appointments = await Appointment.find(query).sort({ createdAt: -1 }).limit(100)
 
   return res.status(200).json({
     appointments: appointments.map((item) => ({
       id: item.id,
+      ownerId: item.ownerId,
       ownerName: item.ownerName,
       petName: item.petName,
       doctorName: item.doctorName,
@@ -84,6 +104,7 @@ export async function updateAppointment(req, res) {
   return res.status(200).json({
     appointment: {
       id: appointment.id,
+      ownerId: appointment.ownerId,
       ownerName: appointment.ownerName,
       petName: appointment.petName,
       doctorName: appointment.doctorName,

@@ -1,5 +1,20 @@
 import { User } from '../models/User.js'
 
+export async function listUsers(req, res) {
+  const role = String(req.query.role || '').trim()
+  const query = role ? { role } : {}
+  const users = await User.find(query).sort({ name: 1 }).limit(500)
+
+  return res.status(200).json({
+    users: users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    })),
+  })
+}
+
 export async function getUserProfile(req, res) {
   const { userId } = req.params
 

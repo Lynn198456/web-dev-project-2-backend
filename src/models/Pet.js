@@ -2,6 +2,16 @@ import mongoose from 'mongoose'
 
 export const petSchema = new mongoose.Schema(
   {
+    ownerId: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    ownerName: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     name: {
       type: String,
       required: true,
