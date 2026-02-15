@@ -116,3 +116,18 @@ export async function updateAppointment(req, res) {
     },
   })
 }
+
+export async function deleteAppointment(req, res) {
+  const { appointmentId } = req.params
+  const ownerId = normalizeText(req.query.userId)
+
+  const deleted = ownerId
+    ? await Appointment.findOneAndDelete({ _id: appointmentId, ownerId })
+    : await Appointment.findByIdAndDelete(appointmentId)
+
+  if (!deleted) {
+    return res.status(404).json({ message: 'Appointment not found.' })
+  }
+
+  return res.status(200).json({ message: 'Appointment deleted successfully.' })
+}

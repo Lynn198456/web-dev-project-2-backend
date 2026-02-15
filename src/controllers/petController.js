@@ -14,6 +14,7 @@ function serializePet(pet) {
     age: pet.age,
     weight: pet.weight,
     vaccinationStatus: pet.vaccinationStatus,
+    petPhoto: pet.petPhoto || '',
     lastPrescriptionSummary: pet.lastPrescriptionSummary || '',
     lastPrescriptionAt: pet.lastPrescriptionAt || '',
     createdAt: pet.createdAt,
@@ -32,7 +33,7 @@ export async function listPets(req, res) {
 }
 
 export async function createPet(req, res) {
-  const { ownerId, ownerName, name, breed, age, weight, vaccinationStatus } = req.body
+  const { ownerId, ownerName, name, breed, age, weight, vaccinationStatus, petPhoto } = req.body
 
   if (!name || !breed || !age || !weight || !vaccinationStatus) {
     return res.status(400).json({ message: 'Name, breed, age, weight, and vaccination status are required.' })
@@ -50,6 +51,7 @@ export async function createPet(req, res) {
     age: String(age).trim(),
     weight: String(weight).trim(),
     vaccinationStatus: String(vaccinationStatus).trim(),
+    petPhoto: normalizeText(petPhoto),
   })
 
   return res.status(201).json({
@@ -59,7 +61,8 @@ export async function createPet(req, res) {
 
 export async function updatePet(req, res) {
   const { petId } = req.params
-  const { ownerId, ownerName, name, breed, age, weight, vaccinationStatus } = req.body
+  const requesterOwnerId = normalizeText(req.query.userId)
+  const { ownerId, ownerName, name, breed, age, weight, vaccinationStatus, petPhoto } = req.body
 
   const updates = {}
   if (ownerId !== undefined) {
@@ -83,12 +86,13 @@ export async function updatePet(req, res) {
   if (vaccinationStatus !== undefined) {
     updates.vaccinationStatus = normalizeText(vaccinationStatus)
   }
+  if (petPhoto !== undefined) {
+    updates.petPhoto = normalizeText(petPhoto)
+  }
 
   const Pet = await getPetModel()
-  const pet = await Pet.findByIdAndUpdate(petId, updates, {
-    new: true,
-    runValidators: true,
-  })
+  const query = requesterOwnerId ? { _id: petId, ownerId: requesterOwnerId } : { _id: petId }
+  const pet = await Pet.findOneAndUpdate(query, updates, { new: true, runValidators: true })
 
   if (!pet) {
     return res.status(404).json({ message: 'Pet not found.' })

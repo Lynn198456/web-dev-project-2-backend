@@ -37,6 +37,10 @@ export const petSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    petPhoto: {
+      type: String,
+      default: '',
+    },
     lastPrescriptionSummary: {
       type: String,
       trim: true,
