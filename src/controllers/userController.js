@@ -1,5 +1,7 @@
 import { User } from '../models/User.js'
 import bcrypt from 'bcryptjs'
+import { Appointment } from '../models/Appointment.js'
+import { getPetModel } from '../config/petDb.js'
 
 function normalizeNotificationPreferences(value) {
   const source = value && typeof value === 'object' ? value : {}
@@ -128,4 +130,27 @@ export async function changeUserPassword(req, res) {
   await user.save()
 
   return res.status(200).json({ message: 'Password updated successfully.' })
+}
+
+export async function deleteUser(req, res) {
+  const { userId } = req.params
+
+  const user = await User.findById(userId)
+  if (!user) {
+    return res.status(404).json({ message: 'User not found.' })
+  }
+  if (user.role !== 'pet-owner') {
+    return res.status(400).json({ message: 'Only pet-owner accounts can be removed here.' })
+  }
+
+  const Pet = await getPetModel()
+  const ownerName = String(user.name || '').trim()
+  const deleteByOwner = ownerName
+    ? { $or: [{ ownerId: userId }, { ownerName }] }
+    : { ownerId: userId }
+
+  await Promise.all([Pet.deleteMany(deleteByOwner), Appointment.deleteMany(deleteByOwner)])
+  await User.findByIdAndDelete(userId)
+
+  return res.status(200).json({ message: 'Pet owner removed successfully.' })
 }
